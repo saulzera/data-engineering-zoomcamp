@@ -8,9 +8,9 @@
 
 ### Docker
 
-Docker provides consistent and easily reproducible environments, isolating your pipeline.
+Docker provides consistent and easily reproducible environments, isolating our pipeline.
 
-![](docker.png)
+![docker](img/docker.png)
 
 - Docker image: a blueprint of a container.
 	- Docker file: a text document with all commands to create a Docker image.
@@ -58,8 +58,8 @@ And then, we run it:
 docker run -it test:pandas 2023-01-15 # date passed as an argument
 ```
 
-<br/><br/>
 
+--------
 ### Postgres
 
 Creating a container with postgres.
@@ -80,14 +80,15 @@ pgcli -h localhost -p 5432 -u root -d ny_taxi
 ```
 
 
-We can now ingest data into this container. We're going to use a [dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) containing detailed information on taxi trips in NY.
-The guys from DataTalks have uploaded backup files in [csv](https://github.com/DataTalksClub/nyc-tlc-data) format.
+We can now ingest data into this container. 
+We're going to use a [dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) containing detailed information on taxi trips in NY. The guys from DataTalks have uploaded backup files in [csv](https://github.com/DataTalksClub/nyc-tlc-data) format.
 
-Running the [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb)notebook we can ingest our taxi data into postgres.
+Running the [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb) notebook we can ingest our taxi data into postgres.
 
-
-Now, we can setup PgAdmin container, which will allow us to interact better with the database.
-But first we create a docker network, in order to make postgres and pgadmin "locate" each other. It will link both docker containers.
+--------------
+### pgAdmin
+Time to setup the pgAdmin, which will help with the database management.
+But first we create a docker network, in order to make postgres and pgadmin "locate" each other. It will link both containers.
 
 ```bash
 docker network create pg-network
@@ -105,15 +106,23 @@ dpage/pgadmin4
 ```
 
 
-Then we can access it in the localhost using our browser:
+Then we can access it in the localhost using our browser, and start a local server:
 
-![[pgadmin.png]]
+![pgadmin](img/pgadmin.png)
 
-We can now manage our database through pgAdmin.
+We can now manage our database through pgAdmin and make queries to explore our data.
 
 
 ## Converting the Ingestion Notebook into a Python Script
 
+Next we're going to convert our [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb) notebook to a python script in order to automate the ingestion process. It will get the link to the taxi data, download our dataset and ingest it to  postgres.
+
+In bash, we can make the conversion using the following command:
+```bash
+jupyter nbconvert --to=script filename
+```
+
+Then we make some adjustments, like transform the code into a function and use argparse to parse command line arguments. [Script](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py).
 
 
 
