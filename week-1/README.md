@@ -80,44 +80,13 @@ pgcli -h localhost -p 5432 -u root -d ny_taxi
 ```
 
 
-We can now ingest data into this container. We're going to use a [dataset]([TLC Trip Record Data - TLC (nyc.gov)](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)) containing detailed information on taxi trips in NY.
-The guys from DataTalks have uploaded backup files in [csv]([DataTalksClub/nyc-tlc-data: Backup for NYC TLC data for the DE Zoomcamp course (github.com)](https://github.com/DataTalksClub/nyc-tlc-data)) format.
+We can now ingest data into this container. We're going to use a [dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) containing detailed information on taxi trips in NY.
+The guys from DataTalks have uploaded backup files in [csv](https://github.com/DataTalksClub/nyc-tlc-data) format.
 
-In a few lines of code our taxi data will be ingested into postgres.
-```python
-from time import time
-import pandas as pd
-from sqlalchemy import create_engine
+Running the [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb)notebook we can ingest our taxi data into postgres.
 
-engine = create_engine('postgresql://root:root@localhost:5432/ny_taxi')
-engine.connect()
-
-df = pd.read_csv('yellow_tripdata_2021-01.csv', iterator=True, chunksize=100000)
-
-try:
-    while True:
-
-        t_start = time()
-        df_iter = next(df)
-
-        df_iter.tpep_pickup_datetime = df_iter.tpep_pickup_datetime.apply(pd.to_datetime)
-
-        df_iter.tpep_dropoff_datetime = df_iter.tpep_dropoff_datetime.apply(pd.to_datetime)
-
-        df_iter.to_sql(name='yellow_taxi_data', con=engine, if_exists='append')
-
-        t_end = time()
-        t_final = t_end - t_start
-
-        print(f'inserted another chunk, took {t_final:.2f} seconds.')
-
-except StopIteration:
-
-    print("Data ingestion finished.")
-```
 
 Now, we can setup PgAdmin container, which will allow us to interact better with the database.
-
 But first we create a docker network, in order to make postgres and pgadmin "locate" each other. It will link both docker containers.
 
 ```bash
