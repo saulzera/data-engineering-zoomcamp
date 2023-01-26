@@ -38,10 +38,10 @@ FROM python:3.9
 # create an image with pandas installed 
 RUN pip install pandas
 
-# working dir inside the container
+# change target dir inside the container
 WORKDIR /app
 
-# COPY source file to destination (which will be in our workdir)
+# COPY source file (local) to destination (container)
 COPY pipeline.py pipeline.py
 
 # executables that will run when container is initiated
@@ -62,14 +62,14 @@ docker run -it test:pandas 2023-01-15 # date passed as an argument
 
 ### Postgres
 
-
+Creating a container with postgres.
 
 ```bash
 docker run -it \
     -e POSTGRES_USER="root" \
     -e POSTGRES_PASSWORD="root" \
     -e POSTGRES_DB="ny_taxi" \
-    -v C:\Users\sauld\OneDrive\Documents\Repos\de-zoomcamp-notes\week-1\content\ny_taxi_postgres_data \
+    -v "//c/Users/sauld/OneDrive/Documents/Repos/de-zoomcamp-notes/week-1/content/ny_taxi_postgres_data:/var/lib/postgresql/data" \
     -p 5432:5432 \
 postgres:13
 ```
@@ -78,5 +78,91 @@ Then in a new window (or tab):
 ```bash
 pgcli -h localhost -p 5432 -u root -d ny_taxi
 ```
+
+
+We can now ingest data into this container. We're going to use a [dataset]([TLC Trip Record Data - TLC (nyc.gov)](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)) containing detailed information on taxi trips in NY.
+The guys from DataTalks have uploaded backup files in [csv]([DataTalksClub/nyc-tlc-data: Backup for NYC TLC data for the DE Zoomcamp course (github.com)](https://github.com/DataTalksClub/nyc-tlc-data)) format.
+
+In a few lines of code our taxi data will be ingested into postgres.
+```python
+from time import time
+import pandas as pd
+from sqlalchemy import create_engine
+
+engine = create_engine('postgresql://root:root@localhost:5432/ny_taxi')
+engine.connect()
+
+df = pd.read_csv('yellow_tripdata_2021-01.csv', iterator=True, chunksize=100000)
+
+try:
+    while True:
+
+        t_start = time()
+        df_iter = next(df)
+
+        df_iter.tpep_pickup_datetime = df_iter.tpep_pickup_datetime.apply(pd.to_datetime)
+
+        df_iter.tpep_dropoff_datetime = df_iter.tpep_dropoff_datetime.apply(pd.to_datetime)
+
+        df_iter.to_sql(name='yellow_taxi_data', con=engine, if_exists='append')
+
+        t_end = time()
+        t_final = t_end - t_start
+
+        print(f'inserted another chunk, took {t_final:.2f} seconds.')
+
+except StopIteration:
+
+    print("Data ingestion finished.")
+```
+
+Now, we can setup PgAdmin container, which will allow us to interact better with the database.
+
+But first we create a docker network, in order to make postgres and pgadmin "locate" each other. It will link both docker containers.
+
+```bash
+docker network create pg-network
+```
+
+After creating the container with pgadmin, we add the network info to both postgres and pgadmin (in postgress we name it pg-database):
+```bash
+docker run -it\
+    -e PGADMIN_DEFAULT_EMAIL="admin@admin.com"\
+    -e PGADMIN_DEFAULT_PASSWORD="root"\
+    -p 8080:80 \
+    --network=pg-network\
+    --name pgadmin \
+dpage/pgadmin4
+```
+
+
+Then we can access it in the localhost using our browser:
+
+![[pgadmin.png]]
+
+We can now manage our database through pgAdmin.
+
+
+## Converting the Ingestion Notebook into a Python Script
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
