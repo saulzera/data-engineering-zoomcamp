@@ -1,15 +1,4 @@
-# Index
 
-[1. Setup](#part&nbsp;1&nbsp;-&nbsp;setup&nbsp;and&nbsp;first&nbsp;steps)
-&nbsp; &nbsp;&nbsp; &nbsp;	[1.1. Docker](#Docker)
-&nbsp; &nbsp;&nbsp; &nbsp;	[1.2. Postgres](#Postgres)
-&nbsp; &nbsp;&nbsp; &nbsp;	[1.3. pgAdmin](#pgadmin)
-&nbsp; &nbsp;&nbsp; &nbsp;	[1.4. Ingestion Notebook → Python File](#Converting&nbsp;the&nbsp;Ingestion&nbsp;Notebook&nbsp;into&nbsp;a&nbsp;Python&nbsp;Script)
-&nbsp; &nbsp;&nbsp; &nbsp;	[1.5. Docker Compose](#docker&nbsp;compose)
-[2. GcP & Terraform](#Part&nbsp;2&nbsp;-&nbsp;GcP&nbsp;Infrastructure&nbsp;with&nbsp;Terraform)
-&nbsp; &nbsp;&nbsp; &nbsp;	[2.1. Terraform]()
-
-<br/><br/>
 # Part 1 - Setup and First Steps
 <br/><br/>
 ## Docker
