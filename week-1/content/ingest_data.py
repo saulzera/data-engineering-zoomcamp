@@ -5,7 +5,6 @@
 from time import time
 import argparse
 import os
-import gzip
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -28,11 +27,17 @@ def main(params):
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
     engine.connect()
 
+    data = pd.read_csv(csv_name, compression='gzip')
     df = pd.read_csv(csv_name, iterator=True, chunksize=100000, compression='gzip')
+
+    max_chunk_size = data.shape[0] // 100000 + 1
+    count = 0
 
     try:
         while True:
             t_start = time()
+
+            count += 1
             
             df_iter = next(df)
             
@@ -44,7 +49,7 @@ def main(params):
             t_end = time()
             t_final = t_end - t_start
             
-            print(f'inserted another chunk, took {t_final:.2f} seconds.')
+            print(f'Inserting chunk{count}/{max_chunk_size}. Took {t_final:.2f} seconds.')
             
     except StopIteration:
         print("Data ingestion finished.")

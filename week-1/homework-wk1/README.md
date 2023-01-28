@@ -8,8 +8,7 @@ running:
 docker build --help
 ``` 
 
-output line with the answer:
---iidfile  string
+>--iidfile  string
 
 ---------------------
 
@@ -26,7 +25,7 @@ then:
 pip list
 ```
 
-returns a list with 3 python packages (pip, setuptools and wheel) 
+> returns a list with 3 python packages (pip, setuptools and wheel) 
 
 ---------------------------------------------------------------
 
@@ -75,10 +74,28 @@ For the passengers picked up in the Astoria Zone, which drop off zone had the la
 We want the name of the zone, not the id. (tip, not trip)
 
 ```sql
-
+SELECT "Zone" FROM taxi_zone2
+WHERE "LocationID" = (SELECT "DOLocationID" FROM taxi_zone2
+JOIN gt_2019
+ON "LocationID" = "PULocationID"
+WHERE "tip_amount" = (SELECT MAX(tip_amount) FROM gt_2019
+	JOIN taxi_zone2
+	ON "PULocationID" = "LocationID"
+	WHERE "Zone" = 'Astoria'))
 ```
 
+> "Long Island City/Queens Plaza"
 
 
 
+
+# Terraform
+
+Output of terraform apply:
+```bash
+google_bigquery_dataset.dataset: Creating...
+google_storage_bucket.data-lake-bucket: Creating...
+google_storage_bucket.data-lake-bucket: Creation complete after 1s [id=dtc_data_lake_dtc-de-course-374300]
+google_bigquery_dataset.dataset: Creation complete after 4s [id=projects/dtc-de-course-374300/datasets/trips_data_all]
+```
 

@@ -1,12 +1,18 @@
+# Index
 
-
-# Week 1 - Setup and First Steps
+[1. Setup](#part&nbsp;1&nbsp;-&nbsp;setup&nbsp;and&nbsp;first&nbsp;steps)
+&nbsp; &nbsp;&nbsp; &nbsp;	[1.1. Docker](#Docker)
+&nbsp; &nbsp;&nbsp; &nbsp;	[1.2. Postgres](#Postgres)
+&nbsp; &nbsp;&nbsp; &nbsp;	[1.3. pgAdmin](#pgadmin)
+&nbsp; &nbsp;&nbsp; &nbsp;	[1.4. Ingestion Notebook → Python File](#Converting&nbsp;the&nbsp;Ingestion&nbsp;Notebook&nbsp;into&nbsp;a&nbsp;Python&nbsp;Script)
+&nbsp; &nbsp;&nbsp; &nbsp;	[1.5. Docker Compose](#docker&nbsp;compose)
+[2. GcP & Terraform](#Part&nbsp;2&nbsp;-&nbsp;GcP&nbsp;Infrastructure&nbsp;with&nbsp;Terraform)
+&nbsp; &nbsp;&nbsp; &nbsp;	[2.1. Terraform]()
 
 <br/><br/>
-## Docker + Postgres
-----------------------------
-
-### Docker
+# Part 1 - Setup and First Steps
+<br/><br/>
+## Docker
 
 Docker provides consistent and easily reproducible environments, isolating our pipeline.
 
@@ -60,7 +66,9 @@ docker run -it test:pandas 2023-01-15 # date passed as an argument
 
 
 --------
-### Postgres
+__[Back to Top](#index)__
+<br/><br/>
+## Postgres
 
 Creating a container with postgres.
 
@@ -86,7 +94,9 @@ We're going to use a [dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-recor
 Running the [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb) notebook we can ingest our taxi data into postgres.
 
 --------------
-### pgAdmin
+__[Back to Top](#index)__
+<br/><br/>
+## pgAdmin
 Time to setup the pgAdmin, which will help with the database management.
 But first we create a docker network, in order to make postgres and pgadmin "locate" each other. It will link both containers.
 
@@ -112,7 +122,9 @@ Then we can access it in the localhost using our browser, and start a local serv
 
 We can now manage our database through pgAdmin and make queries to explore our data.
 
-
+--------------
+__[Back to Top](#index)__
+<br/><br/>
 ## Converting the Ingestion Notebook into a Python Script
 
 Next we're going to convert our [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb) notebook to a python script in order to automate the ingestion process. It will get the link to the taxi data, download our dataset and ingest it to  postgres.
@@ -122,13 +134,59 @@ In bash, we can make the conversion using the following command:
 jupyter nbconvert --to=script filename
 ```
 
-Then we make some adjustments, like transform the code into a function and use argparse to parse command line arguments. [Script](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py).
+Then we make some adjustments, like transform the code into a function and use argparse to parse command line arguments. [Finished script](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py).
 
+------------
+__[Back to Top](#index)__
+<br/><br/>
+## Docker Compose
 
+Docker compose is a tool for running multiple containers using a YAML file to create and start all services with a single command.
 
+```yaml
+services:
+  pgdatabase:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    volumes:
+      - "./ny_taxi_postgres_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"
+```
 
+Run the following command on the same folder where the yaml file is:
+```bash
+docker-compose up -d # -d is detached mode, to continue using terminal
+```
 
+>Note: the pgadmin volume mounting is missing, so we'll have to create our server there again.
 
+-------------
+__[Back to Top](#index)__
+<br/><br/>
+# Part 2 - GCP Infrastructure with Terraform
+<br/><br/>
+## Terraform
+
+Terraform is an IaC (Infrastructure-as-Code) tool to automate and manage some tasks.
+
+## GCP
+
+Steps in order to setup GCP:
+- Create a project
+- Create a service account
+- Install SDK
+- Authenticate credentials
 
 
 
