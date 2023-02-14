@@ -34,28 +34,55 @@ conda install -r requirements.txt
 ```
 
 #### Prefect Flow
-Flows are like functions and any function can become a flow by using the @flow decorator, giving the following advantages:
+Flows are like functions and any function can become a flow by using the ==@flow== decorator, giving the following advantages:
 - State transitions are reported to the API, allowing observation of flow execution.
 - Input arguments types can be validated.
 - Retries can be performed on failure.
 - Timeouts can be enforced to prevent unintentional, long-running workflows.
 
-We can transform the [ingest_data.py](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py) script into a Prefect Flow adding the @flow decorator before calling the main function.
+We can transform the [ingest_data.py](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py) script into a Prefect Flow adding the ==@flow== decorator before calling the main function.
 
 #### Prefect Task
 In a Prefect workflow, tasks are functions that receive metadata about upstream dependencies before they run, which could be used to have a task wait on the completion of another task before executing.
 
-We can create a task to transform the data before ingesting it, for example, removing the trips with 0 passengers.
+We can create a task to transform the data before ingesting it, for example, removing the trips with 0 passengers, by placing the ==@taks== decorator before the transfoming function.
 
+![](img/transforming_data.png)
 
+#### Orion: Prefect local UI
 
-#### Blocks and Collections
+Setting up prefect in terminal:
+```bash
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api" # config profile
 
+prefect orion start # start the UI locally
+```
 
-#### Orion UI
+We can access the UI at ==localhost:4200==, and there we can monitor our flow runs.
 
+![](img/prefect_UI.png)
 
+#### Blocks
 
+Blocks provide the storage of configuration and provide interaction with external systems.
+Set up a SQLAlchemy block in prefect using these parameters:
+>Connection Info
+>{ "driver": "postgresql+psycopg2", "database": "ny_taxi", "username": "root", "password": "root", "host": "localhost", "port": "5432" }
+
+Then we can call it in our flow script:
+```python
+@task(log_prints=True, retries=3)
+def ingest_data(table, df):
+
+    connection_block = SqlAlchemyConnector.load("pg-connector")
+
+    with connection_block.get_connection(begin=False) as engine:
+        df.head(n=0).to_sql(name=table, con=engine, if_exists='append')
+        df.to_sql(name=table, con=engine, if_exists='append')
+```
+----
+__[Back to Top](#top)__
+<br/><br/>
 
 # ETL with GPC & Prefect
 
@@ -131,15 +158,19 @@ Then create a docker-container block in prefect, and import it to a python file 
 python flows/docker_deploy.py
 ```
 
-Before
+If its not set yet, configure prefect api:
 ```bash
-prefect profile ls
+prefect profile ls # to see current profile
 
 prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
 
-prefect agent start -q default
+prefect agent start -q default # will start the current agent
 ```
 
-
+Then we can finally run our flow to run the script in a docker container in prefect:
+```bash
+# -p to pass the parameters, otherwise it will deploy the default parameters
+prefect deployment run etl-parent-flow/docker-flow -p "months=[1, 2, 3, 4]"
+```
 
 __[Back to Top](#top)__
