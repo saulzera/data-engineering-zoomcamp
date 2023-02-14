@@ -4,7 +4,7 @@
 
 A repository that stores all kinds of raw data, making it available to a wide range of use cases.
 
-<img src="img/dlake.png" width=150>
+<img src="img/dlake.png" width=300>
 
 With poor organization it might become a data swamp, turning it inaccessible to the users and providing little value.
 
