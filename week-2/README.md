@@ -4,7 +4,7 @@
 
 A repository that stores all kinds of raw data, making it available to a wide range of use cases.
 
-![a](dlake.jpg)
+![a](dlake.png)
 
 With poor organization it might become a data swamp, turning it inaccessible to the users and providing little value.
 
@@ -34,20 +34,28 @@ conda install -r requirements.txt
 ```
 
 #### Prefect Flow
-Flows are like functions and any function can become a flow by using the @flow decorator, giving the following advantages:
+Flows are like functions and any function can become a flow by using the **@flow** decorator, giving the following advantages:
 - State transitions are reported to the API, allowing observation of flow execution.
 - Input arguments types can be validated.
 - Retries can be performed on failure.
 - Timeouts can be enforced to prevent unintentional, long-running workflows.
 
-We can transform the [ingest_data.py](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py) script into a Prefect Flow adding the @flow decorator before calling the main function.
+We can transform the [ingest_data.py](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py) script into a Prefect Flow adding the **@flow** decorator before calling the main function.
 
 #### Prefect Task
 In a Prefect workflow, tasks are functions that receive metadata about upstream dependencies before they run, which could be used to have a task wait on the completion of another task before executing.
 
-We can create a task to transform the data before ingesting it, for example, removing the trips with 0 passengers, by placing the @taks decorator before the transfoming function.
+We can create a task to transform the data before ingesting it, for example, removing the trips with 0 passengers, by placing the **@taks** decorator before the transfoming function.
 
-![b](img/task.png)
+```python
+@task(log_prints=True)
+def transform_data(df):
+    print(f"pre: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    df = df[df['passenger_count'] != 0]
+    print(f"post: missing passenger count: {df['passenger_count'].isin([0]).sum()}")
+    return df
+```
+
 
 #### Orion: Prefect local UI
 
