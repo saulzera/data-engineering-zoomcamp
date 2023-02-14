@@ -1,4 +1,6 @@
 
+###### Top
+
 # Part 1 - Setup and First Steps
 <br/><br/>
 ## Docker
@@ -55,7 +57,7 @@ docker run -it test:pandas 2023-01-15 # date passed as an argument
 
 
 --------
-__[Back to Top](#index)__
+__[Back to Top](#top)__
 <br/><br/>
 ## Postgres
 
@@ -83,7 +85,7 @@ We're going to use a [dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-recor
 Running the [upload_data](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/upload_data.ipynb) notebook we can ingest our taxi data into postgres.
 
 --------------
-__[Back to Top](#index)__
+__[Back to Top](#top)__
 <br/><br/>
 ## pgAdmin
 Time to setup the pgAdmin, which will help with the database management.
@@ -112,7 +114,7 @@ Then we can access it in the localhost using our browser, and start a local serv
 We can now manage our database through pgAdmin and make queries to explore our data.
 
 --------------
-__[Back to Top](#index)__
+__[Back to Top](#top)__
 <br/><br/>
 ## Converting the Ingestion Notebook into a Python Script
 
@@ -126,11 +128,11 @@ jupyter nbconvert --to=script filename
 Then we make some adjustments, like transform the code into a function and use argparse to parse command line arguments. [Finished script](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py).
 
 ------------
-__[Back to Top](#index)__
+__[Back to Top](#top)__
 <br/><br/>
 ## Docker Compose
 
-Docker compose is a tool for running multiple containers using a YAML file to create and start all services with a single command.
+Docker compose is a tool for running multiple containers using an YAML file to create and start all services with a single command.
 
 ```yaml
 services:
@@ -161,7 +163,7 @@ docker-compose up -d # -d is detached mode, to continue using terminal
 >Note: the pgadmin volume mounting is missing, so we'll have to create our server there again.
 
 -------------
-__[Back to Top](#index)__
+__[Back to Top](#top)__
 <br/><br/>
 # Part 2 - GCP Infrastructure with Terraform
 <br/><br/>
@@ -177,10 +179,23 @@ Steps in order to setup GCP:
 - Install SDK
 - Authenticate credentials
 
+After everything is ready, it is time to start terraform:
 
+```bash
+# Refresh service-account's auth-token for this session
+gcloud auth application-default login
 
+# Initialize state file (.tfstate)
+terraform init
 
+# Check changes to new infra plan
+terraform plan -var="project=<your-gcp-project-id>"
+# Create new infra
+terraform apply -var="project=<your-gcp-project-id>"
 
+# Delete infra after your work, to avoid costs on any running services
+terraform destroy
+```
 
 
 
