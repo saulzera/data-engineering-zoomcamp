@@ -4,7 +4,7 @@
 
 A repository that stores all kinds of raw data, making it available to a wide range of use cases.
 
-![](data_lake.jpg)
+![a](dlake.jpg)
 
 With poor organization it might become a data swamp, turning it inaccessible to the users and providing little value.
 
@@ -34,20 +34,20 @@ conda install -r requirements.txt
 ```
 
 #### Prefect Flow
-Flows are like functions and any function can become a flow by using the ==@flow== decorator, giving the following advantages:
+Flows are like functions and any function can become a flow by using the @flow decorator, giving the following advantages:
 - State transitions are reported to the API, allowing observation of flow execution.
 - Input arguments types can be validated.
 - Retries can be performed on failure.
 - Timeouts can be enforced to prevent unintentional, long-running workflows.
 
-We can transform the [ingest_data.py](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py) script into a Prefect Flow adding the ==@flow== decorator before calling the main function.
+We can transform the [ingest_data.py](https://github.com/saulzera/data-engineering-zoomcamp/blob/master/week-1/content/ingest_data.py) script into a Prefect Flow adding the @flow decorator before calling the main function.
 
 #### Prefect Task
 In a Prefect workflow, tasks are functions that receive metadata about upstream dependencies before they run, which could be used to have a task wait on the completion of another task before executing.
 
-We can create a task to transform the data before ingesting it, for example, removing the trips with 0 passengers, by placing the ==@taks== decorator before the transfoming function.
+We can create a task to transform the data before ingesting it, for example, removing the trips with 0 passengers, by placing the @taks decorator before the transfoming function.
 
-![](img/transforming_data.png)
+![b](img/task.png)
 
 #### Orion: Prefect local UI
 
@@ -58,9 +58,9 @@ prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api" # config profile
 prefect orion start # start the UI locally
 ```
 
-We can access the UI at ==localhost:4200==, and there we can monitor our flow runs.
+We can access the UI at localhost:4200, and there we can monitor our flow runs. 
 
-![](img/prefect_UI.png)
+![c](img/prefect_UI.png)
 
 #### Blocks
 
@@ -94,7 +94,7 @@ prefect block register -m prefect_gcp
 ```
 
 Terminal output:
-![](img/block_bucket_output.png)
+![e](img/block_bucket_output.png)
 
 > 
 
@@ -119,7 +119,7 @@ Deployment storage None does not have upload capabilities; no files uploaded.  P
 
 This creates an YAML file with the metadata from the flow, and we can set its parameters from there, such as 'color', 'months' and 'year'.
 
-![](img/parameterized_etl.png)
+![f](img/parameterized_etl.png)
 
 Now we can apply them using command line:
 ```bash
