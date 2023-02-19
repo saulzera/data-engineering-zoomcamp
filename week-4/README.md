@@ -29,9 +29,8 @@ Other approaches:
 <br/>
 
 ### Elements of Dimensional Modeling
-refer to [Star schema](https://en.wikipedia.org/wiki/Star_schema).
+[Star schema](https://en.wikipedia.org/wiki/Star_schema).
 
-<br/>
 
 #### Fact tables
 - Measurements, metrics, facts.
