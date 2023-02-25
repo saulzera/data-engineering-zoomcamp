@@ -1,0 +1,24 @@
+# setup java
+export JAVA_HOME="/c/tools/jdk-11.0.17" # path where you unpacked the JDK 
+export PATH="${JAVA_HOME}/bin:${PATH}"
+
+# setup hadoop
+HADOOP_VERSION="3.2.0"
+PREFIX="https://raw.githubusercontent.com/cdarlint/winutils/master/hadoop-${HADOOP_VERSION}/bin/"
+
+FILES="hadoop.dll hadoop.exp hadoop.lib hadoop.pdb libwinutils.lib winutils.exe winutils.pdb"
+
+for FILE in ${FILES}; do
+  wget "${PREFIX}/${FILE}"
+done
+
+export HADOOP_HOME="/c/tools/hadoop-3.2.0"
+export PATH="${HADOOP_HOME}/bin:${PATH}"
+
+# setup spark
+export SPARK_HOME="/c/tools/spark-3.0.3-bin-hadoop3.2"
+export PATH="${SPARK_HOME}/bin:${PATH}"
+
+# setup pyspark
+export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9-src.zip:$PYTHONPATH"
